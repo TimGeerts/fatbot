@@ -75,7 +75,7 @@ export abstract class Key {
     if (args.tank === 1 || args.tank === undefined) {
       arr.push('Tank');
     }
-    if (args.healer === 1 || args.healer === undefined) {
+    if (args.heal === 1 || args.heal === undefined) {
       arr.push('Healer');
     }
     if (args.dps !== 0 || args.dps === undefined) {
