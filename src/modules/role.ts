@@ -1,5 +1,5 @@
 import { ArgsOf, Client, Command, CommandMessage, Infos, Once } from '@typeit/discord';
-import { Message, MessageEmbed, MessageReaction, TextChannel, User } from 'discord.js';
+import { Message, MessageEmbed, TextChannel } from 'discord.js';
 import { getRoleMessage, setRoleMessage } from '../services/resource.service';
 import { IStoredMessage } from '../types';
 import { Utils } from '../utils';
@@ -14,7 +14,7 @@ export abstract class Roles {
       .then((msg: IStoredMessage) => {
         // check if there was a previous message we should track for reactions
         if (msg && msg?.channelId !== '-1' && msg?.messageId !== '-1') {
-          Utils.debug('previous rolemessage found, attaching handler');
+          Utils.success('Previous rolemessage found, attaching handler to the existing message');
           const chan = client.channels.cache.get(msg.channelId) as TextChannel;
           if (chan) {
             chan.messages.fetch(msg.messageId).then((m) => {

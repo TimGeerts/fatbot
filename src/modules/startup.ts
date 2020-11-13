@@ -8,7 +8,7 @@ export abstract class Startup {
   private ready(message: ArgsOf<'message'>, client: Client) {
     // init the helper.service properties
     Utils.init(client);
-    Utils.log(':robot: bot started bleep bloop bleep bloop :robot:');
+    Utils.success('Bot successfully started');
   }
 
   @Command('restart')

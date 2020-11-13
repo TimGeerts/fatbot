@@ -1,4 +1,4 @@
-import { MessageEmbed, Message, MessageReaction, User, EmbedField, Snowflake, Guild } from 'discord.js';
+import { MessageEmbed, Message, User, EmbedField } from 'discord.js';
 import { Command, CommandMessage, Description, Client } from '@typeit/discord';
 import { getDungeons } from '../services/resource.service';
 import { IDungeon } from '../types';
