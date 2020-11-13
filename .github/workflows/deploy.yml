@@ -41,4 +41,5 @@ jobs:
           script: |
             cd bots/sinbot/
             git pull
+            cd ../
             pm2 restart sinbot
