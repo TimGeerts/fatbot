@@ -1,0 +1,9 @@
+{
+  "apps": [
+    {
+      "name": "sinbot",
+      "script": "npm",
+      "args": "run start:prod"
+    }
+  ]
+}
