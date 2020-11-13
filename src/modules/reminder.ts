@@ -65,7 +65,7 @@ export abstract class Reminder {
       }
       return true;
     });
-    Utils.log(`Parsed ${result.length} reminder(s) for SinBot`, 'LOG');
+    Utils.success(`Parsed ${result.length} reminder(s) for SinBot`);
     return result;
   }
 
