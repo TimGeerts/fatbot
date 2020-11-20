@@ -34,18 +34,26 @@ export abstract class Guides {
   }
 
   private replyGuideList(): MessageEmbed {
-    const embed = new MessageEmbed().setTitle(`Available guide commands`).setColor(0xfaa61a);
-    this.allGuides.forEach((boss) => {
-      if (boss.tags && boss.tags.length) {
-        embed.addField(`**${boss.name}:**`, `\`?guide ${boss.tags[0]}\``);
+    const embed = new MessageEmbed()
+      .setColor(0xd82428)
+      .setTitle(`Castle Nathria - guides`)
+      .setDescription(
+        'Castle Nathria is a gothic-style castle towering strong above the rest of Revendreth. The castle entrance is located in the center area of Revendreth, with the closest flight path currently available being the one by Menagerie of the Master.\n\nCastle Nathria will have 10 boss encounters in the raid, guides for these encounters can be viewed by using one of the commands below.'
+      )
+      .setThumbnail('https://wow.zamimg.com/uploads/guide/header/10246.jpg')
+      .addField('Weakauras', 'https://wago.io/slraid1');
+    const bosses = this.allGuides.map((g) => {
+      if (g.tags && g.tags.length) {
+        return `${g.name} - \`?guide ${g.tags[0]}\``;
       }
     });
+    embed.addField('Guides', bosses);
     return embed;
   }
 
   private replyGuide(g: string): MessageEmbed {
     const guide = this.allGuides.find((b) => b.tags.map((l) => l.toLowerCase()).indexOf(g.toLowerCase()) > -1);
-    const embed = new MessageEmbed().setTitle(`__${guide.name} Mythic - ${guide.raid}__`).setColor(0xfaa61a);
+    const embed = new MessageEmbed().setColor(0xd82428).setTitle(`__${guide.name} Mythic - ${guide.raid}__`);
     if (guide.thumbnail) {
       embed.setThumbnail(guide.thumbnail);
     }
