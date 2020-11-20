@@ -1,53 +1,84 @@
 import { MessageEmbed } from "discord.js";
 import { Interval, isWithinInterval, format, isFuture } from "date-fns";
-import { Command, CommandMessage, Description, Client } from "@typeit/discord";
-import { getLinks } from "../services/resource.service";
+import {
+  Command,
+  CommandMessage,
+  Description,
+  Client,
+  On,
+  ArgsOf,
+  Guard,
+} from "@typeit/discord";
+import { getQuickLinks } from "../services/resource.service";
 import { IQuickLink } from "../types";
+import { HasPrefix, NotBot, NotHandled } from "../guards";
+import { Utils } from "../utils";
+import { linkSync } from "fs";
 
 export abstract class Corruption {
-  private links: IQuickLink[];
-
-  @Command("link :param")
-  @Description(
-    "Lists the available quicklinks or a specific one if a parameter is provided"
-  )
-  async link(command: CommandMessage, client: Client) {
-    getLinks()
+  @On("message")
+  @Guard(NotBot, HasPrefix("?"), NotHandled)
+  private onMessage([message]: ArgsOf<"message">, client: Client) {
+    //the three guards on this handler make sure that
+    // - 1: the author of the message is not a bot
+    // - 2: the message has the "?" prefix
+    // - 3: the message is not handled by another command already implemented
+    const command = Utils.stripPrefix(message.content);
+    //lookup existing quicklink
+    getQuickLinks()
       .then((lnks: IQuickLink[]) => {
         if (lnks && lnks.length) {
-          // if there's no parameter, list out all available links
-          if (!command.args.param) {
+          if (command.toLocaleLowerCase() === "links") {
+            // list all available quicklinks
             const embed = new MessageEmbed()
               .setColor("#c97a30")
               .setTitle("Available links")
-              .setDescription("The following link commands are available");
-
-            lnks.forEach((l) => {
-              embed.addField(`?link ${l.command}`, l.description);
+              .setDescription("The following links are available");
+            const commands = lnks.map((l) => {
+              if (l.tags && l.tags.length) {
+                return `\`?${l.tags[0]}\``;
+              }
             });
-            command.reply(embed);
+            embed.addField("Commands", commands.join("\n"));
+            message.reply(embed);
           } else {
-            // try to find the specific link that's asked for in the parameter
-            const specific = command.args.param.toString().toLocaleLowerCase();
-            const l = lnks.find(
-              (l) => l.command.toLocaleLowerCase() === specific
-            );
-            if (l) {
-              command.reply(l.content);
-            } else {
-              throw new Error(
-                `No link was found for the command \`\`!link ${specific}\`\``
-              );
+            const lnk = this.lookupCommand(command, lnks);
+            if (!lnk) {
+              message.reply("I have no witty reply for that command...");
+              return;
             }
+            const reply = this.getRandomReply(lnk);
+            if (!reply) {
+              message.reply("I have no witty reply for that command...");
+              return;
+            }
+            message.reply(reply);
           }
         } else {
           throw new Error("No links were found");
         }
       })
       .catch((err: Error) => {
-        command.reply(
+        message.reply(
           `Sorry, I had some trouble fetching that information.\n\n${err.message}`
         );
       });
+  }
+
+  // try and find a matching QuickLink for the command
+  private lookupCommand(command: string, links: IQuickLink[]): IQuickLink {
+    const link = links.find(
+      (l) =>
+        l.tags.map((t) => t.toLowerCase()).indexOf(command.toLowerCase()) > -1
+    );
+    return link;
+  }
+
+  // gets a random reply from the available replies to a command
+  private getRandomReply(link: IQuickLink): string {
+    if (link.replies && link.replies.length) {
+      return link.replies[Math.floor(Math.random() * link.replies.length)];
+    }
+    return null;
   }
 }

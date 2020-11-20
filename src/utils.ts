@@ -1,17 +1,29 @@
-import { CommandMessage, Client } from '@typeit/discord';
-import { Guild, Message, MessageReaction, ReactionCollector, Role, Snowflake, TextChannel, User } from 'discord.js';
-import { Emoji } from './types';
+import { CommandMessage, Client } from "@typeit/discord";
+import {
+  Guild,
+  Message,
+  MessageReaction,
+  ReactionCollector,
+  Role,
+  Snowflake,
+  TextChannel,
+  User,
+} from "discord.js";
+import { isUndefined } from "util";
+import { Emoji } from "./types";
 
 export namespace Utils {
   _client: Client;
   _logChan: TextChannel;
 
-  export const guildColor: string = '#a330c9';
+  export const guildColor: string = "#a330c9";
 
   //* Init (pass client property) *//
   export function init(client: Client): void {
     this._client = client;
-    const channel = client.channels.cache.find((c) => c.id === process.env.BOT_CHAN && c.type === 'text');
+    const channel = client.channels.cache.find(
+      (c) => c.id === process.env.BOT_CHAN && c.type === "text"
+    );
     if (channel) {
       this._logChan = channel as TextChannel;
     }
@@ -22,13 +34,21 @@ export namespace Utils {
     return command?.args?.param;
   }
 
+  export function stripPrefix(message: string): string {
+    const startWith = message.startsWith("?");
+    if (message.startsWith("?")) {
+      return message.substring(1);
+    }
+    return message;
+  }
+
   //* Log helpers *//
   // basic log function
   export function log(message: string, prefix?: string) {
     if (prefix) {
       prefix = `[${prefix}] - `;
     } else {
-      prefix = '';
+      prefix = "";
     }
     if (this._logChan) {
       this._logChan.send(`${prefix}${message}`);
@@ -43,14 +63,14 @@ export namespace Utils {
 
   // wrapper that adds the [DEBUG] prefix
   export function debug(message: string): void {
-    if (process.env.DEBUG === 'true') {
-      this.log(message, 'DEBUG');
+    if (process.env.DEBUG === "true") {
+      this.log(message, "DEBUG");
     }
   }
 
   // wrapper that adds the [ERROR] prefix
   export function error(message: string): void {
-    this.log(message, 'ERROR');
+    this.log(message, "ERROR");
   }
 
   //* Emoji/Role helpers *//
@@ -60,8 +80,12 @@ export namespace Utils {
     let retVal = e;
     // returns the emoji, either straight from the enum, or a lookup in cache in case of a custom one
     if (Number(e)) {
-      let customEmoji = this._client.emojis.cache.find((emoji) => emoji.id === e);
-      retVal = customEmoji ? `<:${customEmoji.name}:${customEmoji.id}>` : Emoji[`${role}FallBack`];
+      let customEmoji = this._client.emojis.cache.find(
+        (emoji) => emoji.id === e
+      );
+      retVal = customEmoji
+        ? `<:${customEmoji.name}:${customEmoji.id}>`
+        : Emoji[`${role}FallBack`];
     }
     return retVal;
   }
@@ -72,7 +96,9 @@ export namespace Utils {
     let retVal = e;
     // returns the emoji, either straight from the enum, or a lookup in cache in case of a custom one
     if (Number(e)) {
-      let customEmoji = this._client.emojis.cache.find((emoji) => emoji.id === e);
+      let customEmoji = this._client.emojis.cache.find(
+        (emoji) => emoji.id === e
+      );
       retVal = customEmoji ? customEmoji.id : Emoji[`${role}FallBack`];
     }
     return retVal;
@@ -86,15 +112,15 @@ export namespace Utils {
     switch (emojiToCheck) {
       case Emoji.Tank:
       case Emoji.TankFallBack:
-        role = 'Tank';
+        role = "Tank";
         break;
       case Emoji.Healer:
       case Emoji.HealerFallBack:
-        role = 'Healer';
+        role = "Healer";
         break;
       case Emoji.Dps:
       case Emoji.DpsFallBack:
-        role = 'Dps';
+        role = "Dps";
         break;
     }
     return role;
@@ -158,11 +184,13 @@ export namespace Utils {
   }
 
   // generic filter that can be used in a reactionCollector used for roles
-  export function createRoleReactionCollector(message: Message): ReactionCollector {
-    const tank = this.getEmojiForReaction('Tank');
-    const healer = this.getEmojiForReaction('Healer');
-    const dps = this.getEmojiForReaction('Dps');
-    const lock = '🔒';
+  export function createRoleReactionCollector(
+    message: Message
+  ): ReactionCollector {
+    const tank = this.getEmojiForReaction("Tank");
+    const healer = this.getEmojiForReaction("Healer");
+    const dps = this.getEmojiForReaction("Dps");
+    const lock = "🔒";
 
     return message.createReactionCollector(
       (reaction: MessageReaction, user: User) => {
@@ -180,11 +208,13 @@ export namespace Utils {
   export function getPingStringForRoles(roles: string[], guild: Guild): string {
     const idsToMention: Snowflake[] = [];
     roles.forEach((missingRole) => {
-      const guildRole = guild.roles.cache.find((r) => r.name.toLocaleLowerCase() === missingRole.toLocaleLowerCase());
+      const guildRole = guild.roles.cache.find(
+        (r) => r.name.toLocaleLowerCase() === missingRole.toLocaleLowerCase()
+      );
       if (guildRole) {
         idsToMention.push(guildRole.id);
       }
     });
-    return idsToMention.map((id) => `<@&${id}>`).join(' ');
+    return idsToMention.map((id) => `<@&${id}>`).join(" ");
   }
 }

@@ -16,7 +16,7 @@ abstract class SinBot {
   @Command("help")
   @Description("List all available commands")
   private help(command: CommandMessage) {
-    const silent = ["help", "restart", "rolemessage"];
+    const silent = ["help", "restart", "rolemessage", "reminders"];
     const cmds = Client.getCommands();
     const embed = new MessageEmbed()
       .setColor("#0099ff")
