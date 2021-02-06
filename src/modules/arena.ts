@@ -23,7 +23,7 @@ export abstract class Arena {
             "`?arena <type> <rating> <healer>`\n*(<healer> is optional but can be used to indicate you want at least one healer to sign)*"
           )
           .addField(
-            "Looking for a dsp partner in 2v2 (at 1400 rating)",
+            "Looking for a dps partner in 2v2 (at 1400 rating)",
             "`?arena 2 1400`"
           )
           .addField(
