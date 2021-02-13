@@ -52,7 +52,8 @@ export abstract class Corruption {
               message.reply("I have no witty reply for that command...");
               return;
             }
-            message.reply(reply);
+            message.channel.send(reply);
+            message.delete();
           }
         } else {
           throw new Error("No links were found");
