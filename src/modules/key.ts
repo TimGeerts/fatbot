@@ -31,9 +31,9 @@ export abstract class Key {
                 "Syntax",
                 "`?key <dungeon> <level> <tank> <healer> <dps>`\n*(tank/healer/dps are optional parameters)*"
               )
-              .addField("Looking for a full group", "`?key AD 18`")
-              .addField("Looking for two dps", "`?key AD 18 0 0 2`")
-              .addField("Looking for tank and healer", "`?key AD 18 1 1 0`");
+              .addField("Looking for a full group", "`?key MoTS 18`")
+              .addField("Looking for two dps", "`?key HoA 18 0 0 2`")
+              .addField("Looking for tank and healer", "`?key PF 18 1 1 0`");
             const dungeon_acronyms = dungeons
               .sort((a, b) => (a.name > b.name ? 1 : -1))
               .map((d) => `${d.name}: \`${d.tags[0]}\``);
