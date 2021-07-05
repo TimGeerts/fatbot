@@ -24,7 +24,7 @@ export abstract class Welcome {
         Make sure to go to the ${this.chooseRoleChannel} channel for aditional roles you wish to have. Remember that those roles can be used as 'pings' on this discord (so don't choose too many if you're alergic to pings :wink:)
         
         **Rules**
-        Please go over the server rules in ${this.rulesChannel}
+        Please read our ${this.rulesChannel}.
         
 
         **Thank you for choosing The Eight Sin, we're delighted that you have joined us!**`
