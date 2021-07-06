@@ -3,7 +3,7 @@ import { GuildMember, MessageEmbed, PartialGuildMember } from 'discord.js';
 import { Utils } from '../utils';
 
 export abstract class Welcome {
-  private defaultRoleGiven = 'Friend of the Eight Sin';
+  private defaultRoleGiven = 'Friend of the Eighth Sin';
   private chooseRoleChannel = '<#774297748039532586>';
   private rulesChannel = '<#580734247963197450>';
 
