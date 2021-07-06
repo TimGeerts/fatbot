@@ -1,5 +1,6 @@
 import { Client, On, ArgsOf } from '@typeit/discord';
-import { MessageEmbed } from 'discord.js';
+import { GuildMember, MessageEmbed, PartialGuildMember } from 'discord.js';
+import { Utils } from '../utils';
 
 export abstract class Welcome {
   private defaultRoleGiven = 'Friend of the Eight Sin';
@@ -32,7 +33,15 @@ export abstract class Welcome {
       .setThumbnail(
         'https://cdn.discordapp.com/icons/530132759210098690/fbd1d57562737104711c74ec7812eb50.png?size=128'
       );
-
+    Utils.debug(`'guildMemberAdd' event triggered, sending welcome message`);
     member.send(welcomeEmbed);
+    this.addFriendsOfTesRole(member);
+  }
+
+  private addFriendsOfTesRole(member: GuildMember | PartialGuildMember): void {
+    const guild = member.guild;
+    const user = member.user;
+    const role = Utils.findRoleByName(this.defaultRoleGiven, member.guild);
+    Utils.addRole(guild, user, role);
   }
 }

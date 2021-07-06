@@ -122,10 +122,13 @@ export namespace Utils {
   // finds the role (of type Role) for the given "reaction"
   export function findRoleForReaction(reaction: MessageReaction): Role {
     const roleName = this.findRoleNameForReaction(reaction);
+    const guild = reaction?.message?.guild;
+    return findRoleByName(roleName, guild);
+  }
 
-    const discordRole = reaction?.message?.guild?.roles.cache.find(
-      (r) => r.name.toLocaleLowerCase() === roleName.toLocaleLowerCase()
-    );
+  // finds the role (of type Role) for the given "name" and "guild"
+  export function findRoleByName(roleName: string, guild: Guild): Role {
+    const discordRole = guild?.roles.cache.find((r) => r.name.toLocaleLowerCase() === roleName.toLocaleLowerCase());
     if (!discordRole) {
       error(`The role '${roleName}' could not be found in this discord.`);
     }
