@@ -1,11 +1,12 @@
-import { Command, CommandMessage, Infos } from '@typeit/discord';
-import { GuildMember } from 'discord.js';
+import { Command, CommandMessage, Infos, On } from '@typeit/discord';
+import { Client, GuildMember, Presence } from 'discord.js';
 import { Utils } from '../utils';
 
 export abstract class Twitch {
   @Command('twitch')
   @Infos({ description: 'Lists out all currently active twitch streams' })
   async twitch(command: CommandMessage) {
+    const streamingChannel = Utils.getStreamingChannel();
     let streams: string[] = new Array<string>();
     const members = command?.guild?.members?.cache;
     if (members) {

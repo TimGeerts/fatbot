@@ -1,19 +1,31 @@
 import { CommandMessage, Client } from '@typeit/discord';
-import { Guild, Message, MessageReaction, ReactionCollector, Role, Snowflake, TextChannel, User } from 'discord.js';
+import {
+  Channel,
+  Guild,
+  Message,
+  MessageReaction,
+  ReactionCollector,
+  Role,
+  Snowflake,
+  TextChannel,
+  User,
+} from 'discord.js';
 import { Emoji } from './types';
 
 export namespace Utils {
-  _client: Client;
-  _logChan: TextChannel;
+  let _client: Client = null;
+  let _logChan: TextChannel = null;
 
   export const guildColor: string = '#a330c9';
+  export const streamChannel: string = '859769075173425192';
+  // my test channel for stream notifications: 729317838338392174
 
   //* Init (pass client property) *//
   export function init(client: Client): void {
-    this._client = client;
+    _client = client;
     const channel = client.channels.cache.find((c) => c.id === process.env.BOT_CHAN && c.type === 'text');
     if (channel) {
-      this._logChan = channel as TextChannel;
+      _logChan = channel as TextChannel;
     }
   }
 
@@ -41,6 +53,15 @@ export namespace Utils {
     return '';
   }
 
+  // finds a text channel in this guild based on the id of the channel
+  export function findChannelById(channelId: string): Channel {
+    const channel = _client.channels.cache.find((c: Channel) => c.id === streamChannel && c.type === 'text');
+    if (!channel) {
+      error(`The channel with id '${channelId}' could not be found in this discord.`);
+    }
+    return channel;
+  }
+
   //* Log helpers *//
   // basic log function
   export function log(message: string, prefix?: string) {
@@ -49,8 +70,8 @@ export namespace Utils {
     } else {
       prefix = '';
     }
-    if (this._logChan) {
-      this._logChan.send(`${prefix}${message}`);
+    if (_logChan) {
+      _logChan.send(`${prefix}${message}`);
     } else {
       console.log(`${prefix}${message}`);
     }
@@ -69,7 +90,7 @@ export namespace Utils {
 
   // wrapper that adds the [ERROR] prefix
   export function error(message: string): void {
-    this.log(message, 'ERROR');
+    log(message, 'ERROR');
   }
 
   //* Emoji/Role helpers *//
@@ -79,7 +100,7 @@ export namespace Utils {
     let retVal = e;
     // returns the emoji, either straight from the enum, or a lookup in cache in case of a custom one
     if (Number(e)) {
-      let customEmoji = this._client.emojis.cache.find((emoji) => emoji.id === e);
+      let customEmoji = _client.emojis.cache.find((emoji) => emoji.id === e);
       retVal = customEmoji ? `<:${customEmoji.name}:${customEmoji.id}>` : Emoji[`${role}FallBack`];
     }
     return retVal;
@@ -91,7 +112,7 @@ export namespace Utils {
     let retVal = e;
     // returns the emoji, either straight from the enum, or a lookup in cache in case of a custom one
     if (Number(e)) {
-      let customEmoji = this._client.emojis.cache.find((emoji) => emoji.id === e);
+      let customEmoji = _client.emojis.cache.find((emoji) => emoji.id === e);
       retVal = customEmoji ? customEmoji.id : Emoji[`${role}FallBack`];
     }
     return retVal;
@@ -209,5 +230,10 @@ export namespace Utils {
       }
     });
     return idsToMention.map((id) => `<@&${id}>`).join(' ');
+  }
+
+  //* Twitch helpers *//
+  export function getStreamingChannel(): TextChannel {
+    return this.findChannelById(streamChannel) as TextChannel;
   }
 }
