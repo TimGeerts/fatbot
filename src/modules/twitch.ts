@@ -1,35 +1,39 @@
 import { Command, CommandMessage, Infos, On } from '@typeit/discord';
-import { Client, GuildMember, Presence } from 'discord.js';
+import { GuildMember } from 'discord.js';
+import { twitchFlag } from '../services/features.service';
 import { Utils } from '../utils';
 
 export abstract class Twitch {
   @Command('twitch')
   @Infos({ description: 'Lists out all currently active twitch streams' })
   async twitch(command: CommandMessage) {
-    const streamingChannel = Utils.getStreamingChannel();
-    let streams: string[] = new Array<string>();
-    const members = command?.guild?.members?.cache;
-    if (members) {
-      members.each((m: GuildMember) => {
-        const activities = m.presence?.activities;
-        if (activities && activities.length) {
-          const streaming = activities.find((a) => a.type === 'STREAMING');
-          if (streaming) {
-            streams.push(streaming.url);
+    if (twitchFlag()) {
+      let streams: string[] = new Array<string>();
+      const members = command?.guild?.members?.cache;
+      if (members) {
+        members.each((m: GuildMember) => {
+          const activities = m.presence?.activities;
+          if (activities && activities.length) {
+            const streaming = activities.find((a) => a.type === 'STREAMING');
+            if (streaming) {
+              streams.push(streaming.url);
+            }
           }
-        }
-      });
-    }
+        });
+      }
 
-    if (streams && streams.length) {
-      const result = Utils.multiTwitch(streams);
-      if (result) {
-        command.channel.send(result);
+      if (streams && streams.length) {
+        const result = Utils.multiTwitch(streams);
+        if (result) {
+          command.channel.send(result);
+        } else {
+          this.noStreams(command);
+        }
       } else {
         this.noStreams(command);
       }
     } else {
-      this.noStreams(command);
+      command.channel.send('Twitch module is temporarily disabled');
     }
   }
 
