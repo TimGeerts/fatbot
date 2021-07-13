@@ -17,8 +17,9 @@ export namespace Utils {
   let _logChan: TextChannel = null;
 
   export const guildColor: string = '#a330c9';
-  export const streamChannel: string = '859769075173425192';
-  // my test channel for stream notifications: 729317838338392174
+  // export const streamChannel: string = '859769075173425192';
+  // my test channel for stream notifications:
+  export const streamChannel: string = '729317838338392174';
 
   //* Init (pass client property) *//
   export function init(client: Client): void {
