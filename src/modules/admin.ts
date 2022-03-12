@@ -36,7 +36,7 @@ export abstract class Admin {
     const cmds = Client.getCommands();
     const embed = new MessageEmbed()
       .setColor('#0099ff')
-      .setTitle('Welcome to SinBot')
+      .setTitle('Welcome to FatBot')
       .setDescription('The following commands are available:');
     cmds
       .filter((c) => {
