@@ -1,7 +1,7 @@
 {
   "apps": [
     {
-      "name": "sinbot",
+      "name": "fatbot",
       "script": "npm",
       "args": "run start:prod"
     }

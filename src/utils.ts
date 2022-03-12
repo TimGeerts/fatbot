@@ -17,9 +17,6 @@ export namespace Utils {
   let _logChan: TextChannel = null;
 
   export const guildColor: string = '#a330c9';
-  export const streamChannel: string = '859769075173425192';
-  // my test channel for stream notifications:
-  // export const streamChannel: string = '729317838338392174';
 
   //* Init (pass client property) *//
   export function init(client: Client): void {
@@ -52,15 +49,6 @@ export namespace Utils {
       }
     }
     return '';
-  }
-
-  // finds a text channel in this guild based on the id of the channel
-  export function findChannelById(channelId: string): Channel {
-    const channel = _client.channels.cache.find((c: Channel) => c.id === streamChannel && c.type === 'text');
-    if (!channel) {
-      error(`The channel with id '${channelId}' could not be found in this discord.`);
-    }
-    return channel;
   }
 
   //* Log helpers *//
@@ -231,10 +219,5 @@ export namespace Utils {
       }
     });
     return idsToMention.map((id) => `<@&${id}>`).join(' ');
-  }
-
-  //* Twitch helpers *//
-  export function getStreamingChannel(): TextChannel {
-    return this.findChannelById(streamChannel) as TextChannel;
   }
 }

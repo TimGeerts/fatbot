@@ -1,5 +1,5 @@
 import { MessageEmbed, Message, User, EmbedField, TextChannel } from 'discord.js';
-import { Command, CommandMessage, Description, Client } from '@typeit/discord';
+import { Command, CommandMessage, Description, Client, Infos } from '@typeit/discord';
 import { getDungeons } from '../services/resource.service';
 import { IDungeon } from '../types';
 import { Utils } from '../utils';
@@ -8,7 +8,7 @@ export abstract class Key {
   private client: Client;
 
   @Command('keys :key :level :tank :heal :dps')
-  @Description("Displays a template for people to 'sign up' for a given key")
+  @Infos({ description: "Displays a template for people to 'sign up' for a given key", forAdmins: true })
   async keys(command: CommandMessage, client: Client) {
     this.key(command, client);
   }

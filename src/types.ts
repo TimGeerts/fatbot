@@ -42,11 +42,11 @@ export interface IDungeon {
 
 // fallback emojis are in case the custom ones don't exist on the server
 export enum Emoji {
-  Tank = "🛡️",
-  TankFallBack = "🛡️",
-  Healer = "773896547230023722",
-  HealerFallBack = "🇨🇭",
-  Dps = "⚔️",
-  DpsFallBack = "⚔️",
+  Tank = '🛡️',
+  TankFallBack = '🛡️',
+  Healer = '773896547230023722',
+  HealerFallBack = '🇨🇭',
+  Dps = '⚔️',
+  DpsFallBack = '⚔️',
   // Healer = '773893882957135883', //(localhost custom emoji)
 }
