@@ -7,6 +7,12 @@ import { Utils } from '../utils';
 export abstract class Key {
   private client: Client;
 
+  @Command('wnl :key :level :tank :heal :dps')
+  @Infos({ description: "Displays a template for people to 'sign up' for a given 'weekly no leavers' key" })
+  async wnl(command: CommandMessage, client: Client) {
+    this.key(command, client, true);
+  }
+
   @Command('keys :key :level :tank :heal :dps')
   @Infos({ description: "Displays a template for people to 'sign up' for a given key", forAdmins: true })
   async keys(command: CommandMessage, client: Client) {
@@ -15,7 +21,7 @@ export abstract class Key {
 
   @Command('key :key :level :tank :heal :dps')
   @Description("Displays a template for people to 'sign up' for a given key")
-  async key(command: CommandMessage, client: Client) {
+  async key(command: CommandMessage, client: Client, wnl = false) {
     this.client = client;
     getDungeons()
       .then((dungeons: IDungeon[]) => {
@@ -26,7 +32,7 @@ export abstract class Key {
             helpEmbed
               .setColor('#007bff')
               .setTitle('Usage')
-              .setDescription('Some example usages of the `?key` command')
+              .setDescription('Some example usages of the `?key` (or `?wnl`) command')
               .addField(
                 'Syntax',
                 '`?key <dungeon> <level> <tank> <healer> <dps>`\n*(tank/healer/dps are optional parameters)*'
@@ -54,7 +60,7 @@ export abstract class Key {
             command.args.key = dungeon.name;
             const chan = command.channel;
             chan.send(Utils.getPingStringForRoles(missingRoles, command.guild)).then((pingMsg: Message) => {
-              keyEmbed = this.createEmbed(command);
+              keyEmbed = this.createEmbed(command, wnl);
               chan.send(keyEmbed).then((m: Message) => {
                 //change the author of the message to be the one that sent the command
                 m.author = command.author;
@@ -130,14 +136,18 @@ export abstract class Key {
   }
 
   // create the initial embed based on the command parameters
-  private createEmbed(command: CommandMessage): MessageEmbed {
+  private createEmbed(command: CommandMessage, wnl = false): MessageEmbed {
     const key = command.args.key;
     const level = command.args.level;
     const tank = command.args.tank;
     const heal = command.args.heal;
+    const title = `[LFG] ${key} +${level}`;
     let dps = command.args.dps;
     const embed = new MessageEmbed().setColor('#e6cc80');
-    embed.setTitle(`[LFG] ${key} +${level}`);
+    embed.setTitle(title);
+    if (wnl) {
+      embed.setDescription(':bangbang: __**WEEKLY NO LEAVERS**__ :bangbang:');
+    }
     if (tank === 1 || tank === undefined) {
       embed.addField(Utils.getEmoji('Tank'), '...');
     }
