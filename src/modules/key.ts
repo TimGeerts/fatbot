@@ -301,8 +301,6 @@ export abstract class Key {
 
   private userIsBotAdmin(reaction: MessageReaction): boolean {
     const member = reaction.message.member;
-    return member.roles.cache.some(
-      (r) => r.name.toLocaleLowerCase() === "admin"
-    );
+    return Utils.isOfficer(member);
   }
 }
