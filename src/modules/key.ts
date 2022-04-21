@@ -98,10 +98,12 @@ export abstract class Key {
                   });
                   m.react("🔒");
                   m.react("❌");
+                  m.react("📢");
                   this.followReactions(m, keyEmbed, [
                     command.id,
                     m.id,
                     pingMsg.id,
+                    `${key}-${level}`,
                   ]);
                 });
               });
@@ -164,9 +166,12 @@ export abstract class Key {
   ): void {
     const roleCollector = Utils.createRoleReactionCollector(msg);
     roleCollector.on("collect", (reaction, user) => {
+      const isAdmin = this.isAdminReaction(reaction);
+      const isAuthor = user.id === msg.author.id;
+
       // check if the reaction was the "lock" icon
       if (reaction.emoji.name === "🔒") {
-        if (this.userIsBotAdmin(reaction) || user.id === msg.author.id) {
+        if (isAdmin || isAuthor) {
           this.closeEmbed(embed);
           msg.edit(embed);
           msg.reactions.removeAll();
@@ -174,10 +179,23 @@ export abstract class Key {
           // ignore and remove the reaction
           reaction.users.remove(user);
         }
+        // check if the reaction was the "delete" icon
       } else if (reaction.emoji.name === "❌") {
-        if (this.userIsBotAdmin(reaction) || user.id === msg.author.id) {
+        if (isAdmin || isAuthor) {
           this.deleteMessages(msg.channel as TextChannel, ids);
         } else {
+          // ignore and remove the reaction
+          reaction.users.remove(user);
+        }
+        // check if the reaction was the "loudspeaker" icon
+      } else if (reaction.emoji.name === "📢") {
+        if (isAdmin || isAuthor) {
+          this.pingTeam(msg, ids[3]);
+          this.closeEmbed(embed);
+          msg.edit(embed);
+          msg.reactions.removeAll();
+        } else {
+          // ignore and remove the reaction
           reaction.users.remove(user);
         }
       } else {
@@ -299,8 +317,42 @@ export abstract class Key {
     return motivations[Math.floor(Math.random() * motivations.length)];
   }
 
-  private userIsBotAdmin(reaction: MessageReaction): boolean {
+  private isAdminReaction(reaction: MessageReaction): boolean {
     const member = reaction.message.member;
     return Utils.isOfficer(member);
+  }
+
+  private pingTeam(msg: Message, key: string): void {
+    const voiceChannelName = `key-${key}`;
+    const pingString = Utils.getPingStringForReactions(msg.reactions);
+    // create temporary voice channel in a specific category
+    // 504796984519950359 for localhost
+    // 952237305895219220 for Fat Dragons server
+    const parent = msg.guild.channels.cache.find(
+      (c) => c.id === "952237305895219220"
+    );
+    msg.guild.channels
+      .create(voiceChannelName, {
+        type: "voice", //This create a text channel, you can make a voice one too, by changing "text" to "voice"
+        parent: parent,
+      })
+      .then((channel) => {
+        msg.channel.send(
+          `${pingString}, please log in to your character, the key you signed up for (\`${key}\`) is about to start!\nJoin the voice channel created for this run <#${channel.id}>`
+        );
+        // remove the channel after 5 minutes
+        let timeout = setTimeout(function () {
+          channel.delete();
+        }, 300000);
+        // unless there's "activity" in the channel, then don't delete it
+        this.client.on("voiceStateUpdate", (oldState, newState) => {
+          const memberCount = channel.members.size;
+          if (memberCount > 0) {
+            clearTimeout(timeout);
+          } else {
+            channel.delete();
+          }
+        });
+      });
   }
 }

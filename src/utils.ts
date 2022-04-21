@@ -6,6 +6,7 @@ import {
   Message,
   MessageReaction,
   ReactionCollector,
+  ReactionManager,
   Role,
   Snowflake,
   TextChannel,
@@ -206,11 +207,14 @@ export namespace Utils {
     const dps = this.getEmojiForReaction("Dps");
     const lock = "🔒";
     const del = "❌";
+    const speaker = "📢";
 
     return message.createReactionCollector(
       (reaction: MessageReaction, user: User) => {
         const toCheck = reaction.emoji.id ?? reaction.emoji.name;
-        return !user.bot && [tank, healer, dps, lock, del].includes(toCheck);
+        return (
+          !user.bot && [tank, healer, dps, lock, del, speaker].includes(toCheck)
+        );
       },
       {
         dispose: true,
@@ -231,6 +235,24 @@ export namespace Utils {
       }
     });
     return idsToMention.map((id) => `<@&${id}>`).join(" ");
+  }
+
+  export function getPingStringForReactions(
+    reactions: ReactionManager
+  ): string {
+    const idsToMention: Snowflake[] = [];
+    const tank = this.getEmojiForReaction("Tank");
+    const healer = this.getEmojiForReaction("Healer");
+    const dps = this.getEmojiForReaction("Dps");
+
+    const userList = reactions.cache
+      .filter((r) => {
+        const toCheck = r.emoji.id ?? r.emoji.name;
+        return [tank, healer, dps].includes(toCheck);
+      })
+      .map((r) => r.users.cache.filter((u) => !u.bot).map((u) => u.toString()));
+    [].concat(...userList).forEach((u) => idsToMention.push(u));
+    return idsToMention.join(" ");
   }
 
   export function isOfficer(member: GuildMember): boolean {
