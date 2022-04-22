@@ -29,6 +29,27 @@ export abstract class Admin {
     });
   }
 
+  @Command('config :action :key :val')
+  @Infos({ description: 'Get or set a config variable', forAdmins: true })
+  private config(command: CommandMessage) {
+    const action = command.args.action;
+    const key = command.args.key;
+    const val = command.args.val;
+    console.log(action, key, val);
+    if (action && key) {
+      if (action === 'get') {
+        const keyValue = Utils.getConfig(key);
+        command.reply(`the config value for ${key} is currently set to \`${keyValue}\``);
+      } else if (action == 'set' && val) {
+        const keyValue = Utils.getConfig(key);
+        if (keyValue) {
+          Utils.setConfig(key, val);
+          command.reply(`the config value for ${key} was successfully changed to \`${process.env[key]}\``);
+        }
+      }
+    }
+  }
+
   // help command lists out all available commands
   @Command('help')
   @Infos({ description: 'List all available commands', forAdmins: true })

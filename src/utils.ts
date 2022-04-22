@@ -1,4 +1,4 @@
-import { CommandMessage, Client } from "@typeit/discord";
+import { CommandMessage, Client } from '@typeit/discord';
 import {
   Channel,
   Guild,
@@ -11,22 +11,21 @@ import {
   Snowflake,
   TextChannel,
   User,
-} from "discord.js";
-import { Emoji } from "./types";
+} from 'discord.js';
+import { Emoji } from './types';
 
 export namespace Utils {
   let _client: Client = null;
   let _logChan: TextChannel = null;
-  let _officerRole: string = "Officer";
+  let _officerRole: string = 'Officer';
+  let _adminRole: string = 'Admin';
 
-  export const guildColor: string = "#a330c9";
+  export const guildColor: string = '#a330c9';
 
   //* Init (pass client property) *//
   export function init(client: Client): void {
     _client = client;
-    const channel = client.channels.cache.find(
-      (c) => c.id === process.env.BOT_CHAN && c.type === "text"
-    );
+    const channel = client.channels.cache.find((c) => c.id === process.env.BOT_CHAN && c.type === 'text');
     if (channel) {
       _logChan = channel as TextChannel;
     }
@@ -38,31 +37,46 @@ export namespace Utils {
   }
 
   export function stripPrefix(message: string): string {
-    const startWith = message.startsWith("?");
-    if (message.startsWith("?")) {
+    const startWith = message.startsWith('?');
+    if (message.startsWith('?')) {
       return message.substring(1);
     }
     return message;
   }
 
   export function multiTwitch(streams: string[]): string {
-    const multiTwitch = "https://www.multitwitch.tv/";
+    const multiTwitch = 'https://www.multitwitch.tv/';
     if (streams && streams.length) {
-      const handles = streams.map((s) => s.split("/")?.pop());
+      const handles = streams.map((s) => s.split('/')?.pop());
       if (handles && handles.length) {
-        return `${multiTwitch}${handles.join("/")}`;
+        return `${multiTwitch}${handles.join('/')}`;
       }
     }
-    return "";
+    return '';
+  }
+
+  export function getConfig(key: string): string {
+    var keyToGet = process.env[`${key}`];
+    return keyToGet;
+  }
+
+  export function setConfig(key: string, val: string): void {
+    var keyToSet = process.env[`${key}`];
+    if (keyToSet && val) {
+      process.env[`${key}`] = val;
+    }
   }
 
   //* Log helpers *//
   // basic log function
-  export function log(message: string, prefix?: string) {
+  export function log(message: string, prefix?: string, timestamp?: boolean) {
     if (prefix) {
       prefix = `[${prefix}] - `;
     } else {
-      prefix = "";
+      prefix = '';
+    }
+    if (timestamp) {
+      prefix += `[${new Date().toISOString()}] - `;
     }
     if (_logChan) {
       _logChan.send(`${prefix}${message}`);
@@ -77,14 +91,14 @@ export namespace Utils {
 
   // wrapper that adds the [DEBUG] prefix
   export function debug(message: string): void {
-    if (process.env.DEBUG === "true") {
-      this.log(message, "DEBUG");
+    if (process.env.DEBUG === 'true') {
+      this.log(message, 'DEBUG', true);
     }
   }
 
   // wrapper that adds the [ERROR] prefix
   export function error(message: string): void {
-    log(message, "ERROR");
+    log(message, 'ERROR', true);
   }
 
   //* Emoji/Role helpers *//
@@ -95,9 +109,7 @@ export namespace Utils {
     // returns the emoji, either straight from the enum, or a lookup in cache in case of a custom one
     if (Number(e)) {
       let customEmoji = _client.emojis.cache.find((emoji) => emoji.id === e);
-      retVal = customEmoji
-        ? `<:${customEmoji.name}:${customEmoji.id}>`
-        : Emoji[`${role}FallBack`];
+      retVal = customEmoji ? `<:${customEmoji.name}:${customEmoji.id}>` : Emoji[`${role}FallBack`];
     }
     return retVal;
   }
@@ -122,15 +134,15 @@ export namespace Utils {
     switch (emojiToCheck) {
       case Emoji.Tank:
       case Emoji.TankFallBack:
-        role = "Tank";
+        role = 'Tank';
         break;
       case Emoji.Healer:
       case Emoji.HealerFallBack:
-        role = "Healer";
+        role = 'Healer';
         break;
       case Emoji.Dps:
       case Emoji.DpsFallBack:
-        role = "Dps";
+        role = 'Dps';
         break;
     }
     return role;
@@ -145,9 +157,7 @@ export namespace Utils {
 
   // finds the role (of type Role) for the given "name" and "guild"
   export function findRoleByName(roleName: string, guild: Guild): Role {
-    const discordRole = guild?.roles.cache.find(
-      (r) => r.name.toLocaleLowerCase() === roleName.toLocaleLowerCase()
-    );
+    const discordRole = guild?.roles.cache.find((r) => r.name.toLocaleLowerCase() === roleName.toLocaleLowerCase());
     if (!discordRole) {
       error(`The role '${roleName}' could not be found in this discord.`);
     }
@@ -199,22 +209,19 @@ export namespace Utils {
   }
 
   // generic filter that can be used in a reactionCollector used for roles
-  export function createRoleReactionCollector(
-    message: Message
-  ): ReactionCollector {
-    const tank = this.getEmojiForReaction("Tank");
-    const healer = this.getEmojiForReaction("Healer");
-    const dps = this.getEmojiForReaction("Dps");
-    const lock = "🔒";
-    const del = "❌";
-    const speaker = "📢";
+  export function createRoleReactionCollector(message: Message): ReactionCollector {
+    Utils.debug(`creating ReactionCollector for message: \`${JSON.stringify(message)}\``);
+    const tank = this.getEmojiForReaction('Tank');
+    const healer = this.getEmojiForReaction('Healer');
+    const dps = this.getEmojiForReaction('Dps');
+    const lock = '🔒';
+    const del = '❌';
+    const speaker = '📢';
 
     return message.createReactionCollector(
       (reaction: MessageReaction, user: User) => {
         const toCheck = reaction.emoji.id ?? reaction.emoji.name;
-        return (
-          !user.bot && [tank, healer, dps, lock, del, speaker].includes(toCheck)
-        );
+        return !user.bot && [tank, healer, dps, lock, del, speaker].includes(toCheck);
       },
       {
         dispose: true,
@@ -227,23 +234,19 @@ export namespace Utils {
   export function getPingStringForRoles(roles: string[], guild: Guild): string {
     const idsToMention: Snowflake[] = [];
     roles.forEach((missingRole) => {
-      const guildRole = guild.roles.cache.find(
-        (r) => r.name.toLocaleLowerCase() === missingRole.toLocaleLowerCase()
-      );
+      const guildRole = guild.roles.cache.find((r) => r.name.toLocaleLowerCase() === missingRole.toLocaleLowerCase());
       if (guildRole) {
         idsToMention.push(guildRole.id);
       }
     });
-    return idsToMention.map((id) => `<@&${id}>`).join(" ");
+    return idsToMention.map((id) => `<@&${id}>`).join(' ');
   }
 
-  export function getPingStringForReactions(
-    reactions: ReactionManager
-  ): string {
+  export function getPingStringForReactions(reactions: ReactionManager): string {
     const idsToMention: Snowflake[] = [];
-    const tank = this.getEmojiForReaction("Tank");
-    const healer = this.getEmojiForReaction("Healer");
-    const dps = this.getEmojiForReaction("Dps");
+    const tank = this.getEmojiForReaction('Tank');
+    const healer = this.getEmojiForReaction('Healer');
+    const dps = this.getEmojiForReaction('Dps');
 
     const userList = reactions.cache
       .filter((r) => {
@@ -252,13 +255,16 @@ export namespace Utils {
       })
       .map((r) => r.users.cache.filter((u) => !u.bot).map((u) => u.toString()));
     [].concat(...userList).forEach((u) => idsToMention.push(u));
-    return idsToMention.join(" ");
+    return idsToMention.join(' ');
   }
 
   export function isOfficer(member: GuildMember): boolean {
-    const isOfficer = member.roles.cache.some(
-      (r) => r.name.toLocaleLowerCase() === _officerRole.toLocaleLowerCase()
-    );
+    const isOfficer = member.roles.cache.some((r) => r.name.toLocaleLowerCase() === _officerRole.toLocaleLowerCase());
     return isOfficer;
+  }
+
+  export function isAdmin(member: GuildMember): boolean {
+    const isAdmin = member.roles.cache.some((r) => r.name.toLocaleLowerCase() === _adminRole.toLocaleLowerCase());
+    return isAdmin;
   }
 }
