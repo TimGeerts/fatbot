@@ -1,5 +1,6 @@
 import { Command, CommandMessage, Description, Client, On, ArgsOf, Guard, Infos, Once } from '@typeit/discord';
-import { MessageEmbed } from 'discord.js';
+import { Message, MessageEmbed } from 'discord.js';
+import { NotThy } from '../guards';
 import { Utils } from '../utils';
 
 export abstract class Admin {
@@ -10,6 +11,12 @@ export abstract class Admin {
     // init the helper.service properties
     Utils.init(client);
     Utils.success('Bot successfully started');
+  }
+
+  @On('message')
+  @Guard(NotThy)
+  private onMessage(message: Message) {
+    // console.log(message);
   }
 
   @Command('gma')
@@ -38,8 +45,14 @@ export abstract class Admin {
     console.log(action, key, val);
     if (action && key) {
       if (action === 'get') {
-        const keyValue = Utils.getConfig(key);
-        command.reply(`the config value for ${key} is currently set to \`${keyValue}\``);
+        if (key !== 'all') {
+          const keyValue = Utils.getConfig(key);
+          command.reply(`the config value for ${key} is currently set to \`${keyValue}\``);
+        } else {
+          const configJson = Utils.getConfigJson();
+          console.log(configJson);
+          // command.reply(`the current config values are: \n \`\`\`json\n${configJson}\`\`\``);
+        }
       } else if (action == 'set' && val) {
         const keyValue = Utils.getConfig(key);
         if (keyValue) {
