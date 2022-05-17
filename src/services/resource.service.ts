@@ -1,5 +1,5 @@
-import fetch from 'node-fetch';
-import { IStoredKeystone } from '../types';
+import fetch from "node-fetch";
+import { IStoredKeystone } from "../types";
 
 const API_URL = process.env.FB_API; //won't work without the firebase api url
 const apiGet = (url: string) =>
@@ -9,42 +9,46 @@ const apiGet = (url: string) =>
 
 const apiPut = (url: string, data: any) =>
   fetch(`${API_URL}${url}`, {
-    method: 'put',
+    method: "put",
     body: JSON.stringify(data),
-    headers: { 'Content-Type': 'application/json' },
+    headers: { "Content-Type": "application/json" },
   })
     .then((r) => r.json())
     .catch((r) => r.statusText);
 
 const apiPost = (url: string, data: any) =>
   fetch(`${API_URL}${url}`, {
-    method: 'post',
+    method: "post",
     body: JSON.stringify(data),
-    headers: { 'Content-Type': 'application/json' },
+    headers: { "Content-Type": "application/json" },
   })
     .then((r) => r.json())
     .catch((r) => r.statusText);
 
 const apiDelete = (url: string) =>
   fetch(`${API_URL}${url}`, {
-    method: 'delete',
+    method: "delete",
   })
     .then((r) => r.json())
     .catch((r) => r.statusText);
 
 export const getJobs = async () => {
-  return apiGet('jobs.json');
+  return apiGet("jobs.json");
 };
 
 export const getDungeons = async () => {
-  return apiGet('dungeons.json');
+  return apiGet("dungeons.json");
 };
 
 export const getKeystones = async () => {
-  return apiGet('keystones.json');
+  return apiGet("keystones.json");
 };
 
-export const setKeystone = async (userId: string, char: string, msg: IStoredKeystone) => {
+export const setKeystone = async (
+  userId: string,
+  char: string,
+  msg: IStoredKeystone
+) => {
   let userDiscriminator = userId;
   if (char) {
     userDiscriminator += `-${char.toLocaleLowerCase()}`;
@@ -54,4 +58,8 @@ export const setKeystone = async (userId: string, char: string, msg: IStoredKeys
 
 export const clearKeystones = async () => {
   return apiPut(`keystones.json`, {});
+};
+
+export const getQuickLinks = async () => {
+  return apiGet("quicklinks.json");
 };
