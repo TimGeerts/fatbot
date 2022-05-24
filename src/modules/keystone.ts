@@ -86,7 +86,12 @@ export abstract class KeyStone {
                     reply += ` (for character: ${Utils.capFirst(args.char)})`;
                   }
                   reply += "!";
-                  command.reply(reply);
+                  command.reply(reply).then((m) => {
+                    setTimeout(() => {
+                      m.delete();
+                    }, 300000);
+                  });
+                  command.delete();
                   this.updateKeystonePin(client, dungeons);
                 });
                 break;
