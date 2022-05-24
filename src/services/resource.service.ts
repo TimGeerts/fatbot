@@ -56,6 +56,10 @@ export const setKeystone = async (
   return apiPut(`keystones/${userDiscriminator}.json`, msg);
 };
 
+export const getKeystonePin = async () => {
+  return apiGet("keystone-pin.json");
+};
+
 export const clearKeystones = async () => {
   return apiPut(`keystones.json`, {});
 };
