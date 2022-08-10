@@ -22,7 +22,7 @@ export abstract class KeyStone {
   )
   async keystone(command: CommandMessage, client: Client) {
     const args = command.args;
-    Utils.debug(`\`?keystone\` command executed`);
+    Utils.debug(`\`/keystone\` command executed`);
     Utils.debug(`args: \`${JSON.stringify(command.args)}\``);
     getDungeons()
       .then((dungeons: IDungeon[]) => {
@@ -30,22 +30,22 @@ export abstract class KeyStone {
           const helpEmbed = new MessageEmbed();
           if (!Utils.hasParams(command)) {
             Utils.debug(
-              "No parameters given for the `?keystone` command, showing documentation"
+              "No parameters given for the `/keystone` command, showing documentation"
             );
             helpEmbed
               .setColor("#007bff")
               .setTitle("Usage")
-              .setDescription("Some example usages of the `?keystone` command")
+              .setDescription("Some example usages of the `/keystone` command")
               .addField(
                 "Basic syntax",
-                "`?keystone <action> <dungeon> <level> <char>`"
+                "`/keystone <action> <dungeon> <level> <char>`"
               )
-              .addField("Set a key", "`?keystone set MoTS 18`")
+              .addField("Set a key", "`/keystone set MoTS 18`")
               .addField(
                 "Set a key for a specific character (alt for instance)",
-                "`?keystone set HoA 18 Chipstocks`"
+                "`/keystone set HoA 18 Chipstocks`"
               )
-              .addField("List all keystones", "`?keystone list`");
+              .addField("List all keystones", "`/keystone list`");
             const dungeon_acronyms = dungeons
               .sort((a, b) => (a.name > b.name ? 1 : -1))
               .map((d) => `${d.name}: \`${d.tags[0]}\``);
@@ -61,7 +61,7 @@ export abstract class KeyStone {
                   throw new Error(
                     `Can't set keystone with these parameters (\`${JSON.stringify(
                       args
-                    )}\`).\nAre you sure you used the correct command (\`?keystone set <dungeon> <level> <char:optional>\`)?`
+                    )}\`).\nAre you sure you used the correct command (\`/keystone set <dungeon> <level> <char:optional>\`)?`
                   );
                 }
                 const realDungeon = dungeons.find(
@@ -109,7 +109,7 @@ export abstract class KeyStone {
                 throw new Error(
                   `Can't set keystone with these parameters (\`${JSON.stringify(
                     args
-                  )}\`).\nAre you sure you used the correct command (\`?keystone set <dungeon> <level> <char:optional>\`)?`
+                  )}\`).\nAre you sure you used the correct command (\`/keystone set <dungeon> <level> <char:optional>\`)?`
                 );
             }
           }

@@ -19,7 +19,7 @@ export abstract class Key {
   @Command('key :key :level :tank :heal :dps :remark')
   @Description("Displays a template for people to 'sign up' for a given key")
   async key(command: CommandMessage, client: Client) {
-    Utils.debug(`\`?key\` command executed`);
+    Utils.debug(`\`/key\` command executed`);
     Utils.debug(`args: \`${JSON.stringify(command.args)}\``);
     this.parseCommand(command);
     Utils.debug(`parsed args: \`${JSON.stringify(command.args)}\``);
@@ -33,18 +33,18 @@ export abstract class Key {
             helpEmbed
               .setColor('#007bff')
               .setTitle('Usage')
-              .setDescription('Some example usages of the `?key` command')
+              .setDescription('Some example usages of the `/key` command')
               .addField(
                 'Syntax',
-                '`?key <dungeon> <level> <tank> <healer> <dps>`\n*(tank/healer/dps are optional parameters)*'
+                '`/key <dungeon> <level> <tank> <healer> <dps>`\n*(tank/healer/dps are optional parameters)*'
               )
               .addField('Remark', 'If you want to add a specific remark to your key, add `remark: this is my remark`')
-              .addField('Looking for a full group', '`?key MoTS 18`')
-              .addField('Looking for two dps', '`?key HoA 18 0 0 2`')
-              .addField('Looking for tank and healer', '`?key PF 18 1 1 0`')
+              .addField('Looking for a full group', '`/key MoTS 18`')
+              .addField('Looking for two dps', '`/key HoA 18 0 0 2`')
+              .addField('Looking for tank and healer', '`/key PF 18 1 1 0`')
               .addField(
                 'Looking for one dps (with remark)',
-                '`?key PF 18 0 0 1 remark: preferably a dps with bloodlust`'
+                '`/key PF 18 0 0 1 remark: preferably a dps with bloodlust`'
               );
             const dungeon_acronyms = dungeons
               .sort((a, b) => (a.name > b.name ? 1 : -1))
@@ -102,9 +102,9 @@ export abstract class Key {
   private parseCommand(command: CommandMessage): void {
     // find the remark (if any)
     const rgxRemark = / remark:(.*)/g;
-    const rgxCmd = /\?keys|\?key/g;
+    const rgxCmd = /\/keys|\/key/g;
 
-    // remove the ?key or ?keys part of the command
+    // remove the /key or /keys part of the command
     let content = command.content.replace(rgxCmd, '').trim();
     // get the remark from the command (if any)
     const remark = content.match(rgxRemark);
