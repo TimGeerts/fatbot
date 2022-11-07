@@ -26,6 +26,7 @@ export abstract class Key {
     this.client = client;
     getDungeons()
       .then((dungeons: IDungeon[]) => {
+        dungeons = dungeons.filter((d) => d.active);
         if (dungeons && dungeons.length) {
           const helpEmbed = new MessageEmbed();
           let keyEmbed = new MessageEmbed();
